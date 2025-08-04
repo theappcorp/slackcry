@@ -43,11 +43,12 @@ module SlackCry
               raise "😬 Missing SLACKCRY_SLACK_BOT_TOKEN"
 
       file = ::File.open(file_path)
-      form = HTTP::FormData.build do |f|
-        f.field("channels", channel_id)
-        f.file("file", file, filename: filename, content_type: "application/zip")
-        f.field("initial_comment", initial_comment) if initial_comment
-      end
+
+      builder = HTTP::FormData::Builder.new
+      builder.field("channels", channel_id)
+      builder.file("file", file, filename: filename, content_type: "application/zip")
+      builder.field("initial_comment", initial_comment) if initial_comment
+      form = builder.build
 
       http_post.call(
         "https://slack.com/api/files.upload",
